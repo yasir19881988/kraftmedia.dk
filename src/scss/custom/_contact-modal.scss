@@ -1,0 +1,97 @@
+.contact-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    z-index: 1200;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 240ms ease, visibility 240ms ease;
+}
+
+.contact-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.contact-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(21, 24, 29, 0.86);
+}
+
+.contact-modal-card {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    background: #2C3039;
+    box-shadow: 0 24px 48px rgba(21, 24, 29, 0.32);
+    border: 1px solid rgba(138, 148, 167, 0.2);
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+    transition: opacity 280ms ease, transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.contact-modal.is-open .contact-modal-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.contact-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    height: 40px;
+    width: 40px;
+    padding: 0;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.contact-modal-body {
+    padding: 36px 20px 20px;
+}
+
+.contact-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.feature,
+.pricing-table-inner {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms ease, transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.feature.is-visible,
+.pricing-table-inner.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (min-width: 641px) {
+    .contact-modal-body {
+        padding: 48px 32px 32px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contact-modal,
+    .contact-modal-card,
+    .feature,
+    .pricing-table-inner {
+        transition: none;
+    }
+}

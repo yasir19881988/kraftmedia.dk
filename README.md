@@ -1,13 +1,37 @@
-# Solid
+# Kraft Media
 
-A landing page template.
+Marketing site for Kraft Media, prepared for GitHub-based deployment to Azure Static Web Apps.
 
-* [Getting started](#getting-started)
+## Structure
 
-## Getting started
-* First, ensure that node.js & npm are both installed. If not, choose your OS and installation method from [this page](https://nodejs.org/en/download/package-manager/) and follow the instructions.
-* This template requires Node 14 to work. You can handle multiple node versions with [NVM](https://github.com/nvm-sh/nvm) 
-* Next, use your command line to enter your project directory.
-* This template comes with a ready-to-use package file called `package-sample.json`. You just need to rename it to `package.json`, then run `npm install` to install all of the dependencies into your project.
+- `index.html`: Main landing page markup.
+- `dist/`: Production-ready frontend assets used directly by the page.
+- `dist/css/style.css`: Base compiled theme stylesheet.
+- `dist/css/site-overrides.css`: Site-specific styles for the modal, reveal behavior and local font override.
+- `dist/js/main.js`: Local runtime for hero animation, modal behavior and contact form submission.
+- `src/html/`: HTML partials and page composition templates.
+- `src/`: Source files for SCSS, JavaScript and images.
+- `api/`: Azure Static Web Apps API used by the contact form.
 
-You're ready to go! Run any task by typing `npm run task` (where "task" is the name of the task in the `"scripts"` object). The most useful task for rapid development is `watch`. It will start a new server, open up a browser and watch for any SCSS or JS changes in the `src` directory; once it compiles those changes, the browser will automatically inject the changed file(s)!
+## Build commands
+
+- `npm install`: Install the local build dependencies.
+- `npm run build`: Generate `index.html` and refresh `dist/` from `src/`.
+- `npm run dev`: Watch `src/html`, `src/scss`, `src/js` and `src/images` for changes.
+- `npm run clean`: Remove generated frontend output.
+
+## Local-only frontend
+
+The site no longer depends on CDN-hosted JavaScript or external font links.
+
+- All frontend behavior is loaded from local files in `dist/js/`.
+- All page-specific styling is loaded from local files in `dist/css/`.
+- The contact form posts to `/api/contact`.
+
+## Azure setup
+
+The frontend is designed to deploy together with the `api/` directory through Azure Static Web Apps.
+
+Deployment runs `npm install && npm run build` before upload.
+
+For Azure Communication Services and spam/rate-limit configuration, see `AZURE_COMMUNICATION_SETUP.md`.
