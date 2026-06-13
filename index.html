@@ -33,7 +33,7 @@
 						<div class="hero-copy">
 	                        <h1 class="hero-title mt-0">Serious Web Development Solutions</h1>
 	                        <p class="hero-paragraph">We build and integrate high-performance web solutions with an uncompromising focus on quality, speed, and SEO. Powering your digital growth.</p>
-	                        <div class="hero-cta"><a class="button button-primary" href="#">Get in Touch</a></div>
+                            <div class="hero-cta"><a class="button button-primary" href="#contact">Get in Touch</a></div>
 						</div>
 						<div class="hero-figure anime-element">
 							<svg class="placeholder" width="528" height="396" viewBox="0 0 528 396">
@@ -151,7 +151,7 @@
                                         </ul>
                                     </div>
                                     <div class="pricing-table-cta mb-8">
-                                        <a class="button button-primary button-shadow button-block" href="#">Get in Touch</a>
+                                        <a class="button button-primary button-shadow button-block" href="#contact">Get in Touch</a>
                                     </div>
                                 </div>
                             </div>
@@ -165,11 +165,51 @@
 					<div class="cta-inner section-inner">
 						<h3 class="section-title mt-0">Growth & Power Oriented</h3>
 						<div class="cta-cta">
-							<a class="button button-primary button-wide-mobile" href="#">Get in touch</a>
+                            <a class="button button-primary button-wide-mobile" href="#contact">Get in touch</a>
 						</div>
 					</div>
 				</div>
 			</section>
+
+            <section id="contact" class="section">
+                <div class="container-sm">
+                    <div class="section-inner">
+                        <div class="pricing-header text-center">
+                            <h2 class="section-title mt-0">Let's Talk About Your Project</h2>
+                            <p class="section-paragraph mb-0">Tell us what you need, and we will get back to you quickly with the right solution.</p>
+                        </div>
+                            <div class="pricing-tables-wrap">
+                                <div class="pricing-table">
+                                    <div class="pricing-table-inner is-revealing">
+                                        <form id="contact-form" action="/api/contact" method="post" class="pricing-table-main">
+                                        <div class="field-grouped mb-16">
+                                            <div class="control control-expanded">
+                                                <input class="input" type="text" name="name" placeholder="Name" required>
+                                            </div>
+                                            <div class="control control-expanded">
+                                                <input class="input" type="email" name="email" placeholder="E-mail" required>
+                                            </div>
+                                        </div>
+                                        <div class="field-grouped mb-16">
+                                            <div class="control control-expanded">
+                                                <input class="input" type="tel" name="phone" placeholder="Phone">
+                                            </div>
+                                            <div class="control control-expanded">
+                                                <input class="input" type="url" name="website" placeholder="Website (optional)">
+                                            </div>
+                                        </div>
+                                        <div class="mb-24">
+                                            <textarea class="textarea" name="message" rows="6" placeholder="Message" required></textarea>
+                                        </div>
+                                        <button id="contact-submit" class="button button-primary button-shadow button-block" type="submit">Send Message</button>
+                                        <p id="contact-form-status" class="text-sm mt-16 mb-0" role="status" aria-live="polite"></p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <footer class="site-footer">
@@ -182,7 +222,7 @@
                     </div>
                     <ul class="footer-links list-reset">
                         <li>
-                            <a href="#">Contact</a>
+                            <a href="#contact">Contact</a>
                         </li>
                         <li>
                             <a href="#">About us</a>
@@ -227,5 +267,67 @@
     </div>
 
     <script src="dist/js/main.min.js"></script>
+    <script>
+        (function () {
+            var form = document.getElementById('contact-form');
+            var submitButton = document.getElementById('contact-submit');
+            var statusElement = document.getElementById('contact-form-status');
+
+            if (!form || !submitButton || !statusElement) {
+                return;
+            }
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                var formData = new FormData(form);
+                var payload = {
+                    name: (formData.get('name') || '').toString().trim(),
+                    email: (formData.get('email') || '').toString().trim(),
+                    phone: (formData.get('phone') || '').toString().trim(),
+                    website: (formData.get('website') || '').toString().trim(),
+                    message: (formData.get('message') || '').toString().trim()
+                };
+
+                submitButton.disabled = true;
+                submitButton.textContent = 'Sending...';
+                statusElement.textContent = 'Sending your message...';
+
+                try {
+                    var response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    var result = {};
+                    try {
+                        result = await response.json();
+                    } catch (e) {
+                        result = {};
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Unable to send your message right now.');
+                    }
+
+                    statusElement.textContent = result.message || 'Thanks! Your message was sent successfully.';
+                    form.reset();
+                } catch (error) {
+                    statusElement.textContent = error.message || 'Something went wrong. Please try again shortly.';
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

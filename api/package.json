@@ -1,0 +1,13 @@
+{
+  "name": "kraftmedia-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API functions for Azure Static Web Apps",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@azure/communication-email": "^1.0.0"
+  }
+}
