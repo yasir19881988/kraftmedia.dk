@@ -7,6 +7,59 @@
     <title>Kraft Media</title>
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600" rel="stylesheet">
     <link rel="stylesheet" href="dist/css/style.css">
+    <style>
+        .contact-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            z-index: 1200;
+        }
+
+        .contact-modal.is-open {
+            display: flex;
+        }
+
+        .contact-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(21, 24, 29, 0.86);
+        }
+
+        .contact-modal-card {
+            position: relative;
+            width: 100%;
+            max-width: 760px;
+            max-height: calc(100vh - 48px);
+            overflow: auto;
+            background: #2C3039;
+            box-shadow: 0 24px 48px rgba(21, 24, 29, 0.32);
+            border: 1px solid rgba(138, 148, 167, 0.2);
+        }
+
+        .contact-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            height: 40px;
+            width: 40px;
+            padding: 0;
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .contact-modal-body {
+            padding: 36px 20px 20px;
+        }
+
+        @media (min-width: 641px) {
+            .contact-modal-body {
+                padding: 48px 32px 32px;
+            }
+        }
+    </style>
 	<script src="https://unpkg.com/animejs@3.0.1/lib/anime.min.js"></script>
     <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
 </head>
@@ -33,7 +86,7 @@
 						<div class="hero-copy">
 	                        <h1 class="hero-title mt-0">Serious Web Development Solutions</h1>
 	                        <p class="hero-paragraph">We build and integrate high-performance web solutions with an uncompromising focus on quality, speed, and SEO. Powering your digital growth.</p>
-                            <div class="hero-cta"><a class="button button-primary" href="#contact">Get in Touch</a></div>
+                            <div class="hero-cta"><a class="button button-primary" href="#" data-contact-open="true">Get in Touch</a></div>
 						</div>
 						<div class="hero-figure anime-element">
 							<svg class="placeholder" width="528" height="396" viewBox="0 0 528 396">
@@ -151,7 +204,7 @@
                                         </ul>
                                     </div>
                                     <div class="pricing-table-cta mb-8">
-                                        <a class="button button-primary button-shadow button-block" href="#contact">Get in Touch</a>
+                                        <a class="button button-primary button-shadow button-block" href="#" data-contact-open="true">Get in Touch</a>
                                     </div>
                                 </div>
                             </div>
@@ -165,51 +218,11 @@
 					<div class="cta-inner section-inner">
 						<h3 class="section-title mt-0">Growth & Power Oriented</h3>
 						<div class="cta-cta">
-                            <a class="button button-primary button-wide-mobile" href="#contact">Get in touch</a>
+                            <a class="button button-primary button-wide-mobile" href="#" data-contact-open="true">Get in touch</a>
 						</div>
 					</div>
 				</div>
 			</section>
-
-            <section id="contact" class="section">
-                <div class="container-sm">
-                    <div class="section-inner">
-                        <div class="pricing-header text-center">
-                            <h2 class="section-title mt-0">Let's Talk About Your Project</h2>
-                            <p class="section-paragraph mb-0">Tell us what you need, and we will get back to you quickly with the right solution.</p>
-                        </div>
-                            <div class="pricing-tables-wrap">
-                                <div class="pricing-table">
-                                    <div class="pricing-table-inner is-revealing">
-                                        <form id="contact-form" action="/api/contact" method="post" class="pricing-table-main">
-                                        <div class="field-grouped mb-16">
-                                            <div class="control control-expanded">
-                                                <input class="input" type="text" name="name" placeholder="Name" required>
-                                            </div>
-                                            <div class="control control-expanded">
-                                                <input class="input" type="email" name="email" placeholder="E-mail" required>
-                                            </div>
-                                        </div>
-                                        <div class="field-grouped mb-16">
-                                            <div class="control control-expanded">
-                                                <input class="input" type="tel" name="phone" placeholder="Phone">
-                                            </div>
-                                            <div class="control control-expanded">
-                                                <input class="input" type="url" name="website" placeholder="Website (optional)">
-                                            </div>
-                                        </div>
-                                        <div class="mb-24">
-                                            <textarea class="textarea" name="message" rows="6" placeholder="Message" required></textarea>
-                                        </div>
-                                        <button id="contact-submit" class="button button-primary button-shadow button-block" type="submit">Send Message</button>
-                                        <p id="contact-form-status" class="text-sm mt-16 mb-0" role="status" aria-live="polite"></p>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
 
         <footer class="site-footer">
@@ -222,7 +235,7 @@
                     </div>
                     <ul class="footer-links list-reset">
                         <li>
-                            <a href="#contact">Contact</a>
+                            <a href="#" data-contact-open="true">Contact</a>
                         </li>
                         <li>
                             <a href="#">About us</a>
@@ -266,16 +279,96 @@
         </footer>
     </div>
 
+    <div id="contact-modal" class="contact-modal" aria-hidden="true">
+        <div class="contact-modal-overlay" data-contact-close="true"></div>
+        <div class="contact-modal-card" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+            <button class="button contact-modal-close" type="button" aria-label="Close contact form" data-contact-close="true">&times;</button>
+            <div class="contact-modal-body">
+                <div class="pricing-header text-center">
+                    <h2 id="contact-modal-title" class="section-title mt-0">Let's Talk About Your Project</h2>
+                    <p class="section-paragraph mb-0">Tell us what you need, and we will get back to you quickly with the right solution.</p>
+                </div>
+                <form id="contact-form" action="/api/contact" method="post" class="pricing-table-main">
+                    <div class="field-grouped mb-16">
+                        <div class="control control-expanded">
+                            <input class="input" type="text" name="name" placeholder="Name" required>
+                        </div>
+                        <div class="control control-expanded">
+                            <input class="input" type="email" name="email" placeholder="E-mail" required>
+                        </div>
+                    </div>
+                    <div class="field-grouped mb-16">
+                        <div class="control control-expanded">
+                            <input class="input" type="tel" name="phone" placeholder="Phone">
+                        </div>
+                        <div class="control control-expanded">
+                            <input class="input" type="url" name="website" placeholder="Website (optional)">
+                        </div>
+                    </div>
+                    <div class="mb-24">
+                        <textarea class="textarea" name="message" rows="6" placeholder="Message" required></textarea>
+                    </div>
+                    <button id="contact-submit" class="button button-primary button-shadow button-block" type="submit">Send Message</button>
+                    <p id="contact-form-status" class="text-sm mt-16 mb-0" role="status" aria-live="polite"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="dist/js/main.min.js"></script>
     <script>
         (function () {
+            var modal = document.getElementById('contact-modal');
+            var openButtons = document.querySelectorAll('[data-contact-open="true"]');
+            var closeButtons = document.querySelectorAll('[data-contact-close="true"]');
             var form = document.getElementById('contact-form');
             var submitButton = document.getElementById('contact-submit');
             var statusElement = document.getElementById('contact-form-status');
+            var lastActiveElement = null;
 
-            if (!form || !submitButton || !statusElement) {
+            if (!modal || !form || !submitButton || !statusElement) {
                 return;
             }
+
+            function openModal(triggerElement) {
+                lastActiveElement = triggerElement || document.activeElement;
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                var firstInput = form.querySelector('input, textarea, button');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }
+
+            function closeModal() {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
+                    lastActiveElement.focus();
+                }
+            }
+
+            openButtons.forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    openModal(button);
+                });
+            });
+
+            closeButtons.forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    closeModal();
+                });
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
 
             form.addEventListener('submit', async function (event) {
                 event.preventDefault();
@@ -320,6 +413,9 @@
 
                     statusElement.textContent = result.message || 'Thanks! Your message was sent successfully.';
                     form.reset();
+					setTimeout(function () {
+						closeModal();
+					}, 700);
                 } catch (error) {
                     statusElement.textContent = error.message || 'Something went wrong. Please try again shortly.';
                 } finally {
