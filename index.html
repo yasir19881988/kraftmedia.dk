@@ -11,15 +11,21 @@
         .contact-modal {
             position: fixed;
             inset: 0;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px 16px;
             z-index: 1200;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 240ms ease, visibility 240ms ease;
         }
 
         .contact-modal.is-open {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
         }
 
         .contact-modal-overlay {
@@ -37,6 +43,14 @@
             background: #2C3039;
             box-shadow: 0 24px 48px rgba(21, 24, 29, 0.32);
             border: 1px solid rgba(138, 148, 167, 0.2);
+            opacity: 0;
+            transform: translateY(18px) scale(0.985);
+            transition: opacity 280ms ease, transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .contact-modal.is-open .contact-modal-card {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         .contact-modal-close {
@@ -52,6 +66,23 @@
 
         .contact-modal-body {
             padding: 36px 20px 20px;
+        }
+
+        .contact-honeypot {
+            position: absolute;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .contact-modal,
+            .contact-modal-card {
+                transition: none;
+            }
         }
 
         @media (min-width: 641px) {
@@ -289,6 +320,11 @@
                     <p class="section-paragraph mb-0">Tell us what you need, and we will get back to you quickly with the right solution.</p>
                 </div>
                 <form id="contact-form" action="/api/contact" method="post" class="pricing-table-main">
+                    <label class="contact-honeypot" aria-hidden="true">
+                        Leave this field empty
+                        <input type="text" name="company_name" tabindex="-1" autocomplete="off">
+                    </label>
+                    <input type="hidden" name="opened_at" value="">
                     <div class="field-grouped mb-16">
                         <div class="control control-expanded">
                             <input class="input" type="text" name="name" placeholder="Name" required>
@@ -325,6 +361,8 @@
             var submitButton = document.getElementById('contact-submit');
             var statusElement = document.getElementById('contact-form-status');
             var lastActiveElement = null;
+            var focusSelector = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            var minOpenDurationMs = 2000;
 
             if (!modal || !form || !submitButton || !statusElement) {
                 return;
@@ -335,9 +373,14 @@
                 modal.classList.add('is-open');
                 modal.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
-                var firstInput = form.querySelector('input, textarea, button');
-                if (firstInput) {
-                    firstInput.focus();
+                var openedAtField = form.elements.opened_at;
+                if (openedAtField) {
+                    openedAtField.value = String(Date.now());
+                }
+                statusElement.textContent = '';
+                var focusableElements = modal.querySelectorAll(focusSelector);
+                if (focusableElements.length > 0) {
+                    focusableElements[0].focus();
                 }
             }
 
@@ -365,8 +408,35 @@
             });
 
             document.addEventListener('keydown', function (event) {
+                if (!modal.classList.contains('is-open')) {
+                    return;
+                }
+
                 if (event.key === 'Escape' && modal.classList.contains('is-open')) {
                     closeModal();
+                    return;
+                }
+
+                if (event.key !== 'Tab') {
+                    return;
+                }
+
+                var focusableElements = Array.prototype.slice.call(modal.querySelectorAll(focusSelector));
+                if (focusableElements.length === 0) {
+                    event.preventDefault();
+                    return;
+                }
+
+                var firstElement = focusableElements[0];
+                var lastElement = focusableElements[focusableElements.length - 1];
+                var activeElement = document.activeElement;
+
+                if (event.shiftKey && activeElement === firstElement) {
+                    event.preventDefault();
+                    lastElement.focus();
+                } else if (!event.shiftKey && activeElement === lastElement) {
+                    event.preventDefault();
+                    firstElement.focus();
                 }
             });
 
@@ -384,8 +454,16 @@
                     email: (formData.get('email') || '').toString().trim(),
                     phone: (formData.get('phone') || '').toString().trim(),
                     website: (formData.get('website') || '').toString().trim(),
-                    message: (formData.get('message') || '').toString().trim()
+                    message: (formData.get('message') || '').toString().trim(),
+                    company_name: (formData.get('company_name') || '').toString().trim(),
+                    opened_at: (formData.get('opened_at') || '').toString().trim()
                 };
+
+                var openedAt = Number(payload.opened_at || 0);
+                if (!openedAt || (Date.now() - openedAt) < minOpenDurationMs) {
+                    statusElement.textContent = 'Please take a moment to review your message before sending.';
+                    return;
+                }
 
                 submitButton.disabled = true;
                 submitButton.textContent = 'Sending...';

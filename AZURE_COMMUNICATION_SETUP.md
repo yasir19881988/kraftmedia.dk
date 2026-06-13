@@ -10,6 +10,15 @@ In your Azure Static Web App, open `Environment variables` and add:
 - `ACS_SENDER_ADDRESS`: Verified sender address (for example `DoNotReply@<your-domain>.azurecomm.net` or your verified custom domain sender).
 - `CONTACT_RECIPIENT_EMAIL`: Inbox that should receive contact form messages.
 
+Optional spam/rate-limit settings:
+
+- `CONTACT_RATE_LIMIT_MAX`: Max requests per IP in the active window (default `5`).
+- `CONTACT_RATE_LIMIT_WINDOW_MS`: Rate-limit window in milliseconds (default `600000`, 10 minutes).
+- `CONTACT_MIN_FORM_OPEN_MS`: Minimum time between modal open and submit (default `2000`).
+- `CONTACT_RATE_LIMIT_PROVIDER`: `table` (default, persistent) or `memory`.
+- `CONTACT_RATE_LIMIT_TABLE_NAME`: Azure Table name for rate-limit counters (default `ContactRateLimit`).
+- `CONTACT_RATE_LIMIT_STORAGE_CONNECTION_STRING`: Optional. If omitted, API uses `AzureWebJobsStorage`.
+
 ## 2. Verify sender in ACS
 
 Before sending e-mails, ensure your sender is verified in Azure Communication Services Email.
